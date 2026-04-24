@@ -3,8 +3,8 @@ import { Kost } from './kost.entity';
 import { Booking } from './booking.entity';
 
 export enum Role {
-  PENCARI = 'PENCARI',
-  PEMILIK = 'PEMILIK',
+  CUSTOMER = 'CUSTOMER',
+  OWNER = 'OWNER',
 }
 
 @Entity('users')
@@ -24,7 +24,7 @@ export class User {
   @Column({
     type: 'enum',
     enum: Role,
-    default: Role.PENCARI,
+    default: Role.CUSTOMER,
   })
   role: Role;
 

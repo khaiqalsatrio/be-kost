@@ -11,10 +11,11 @@ Fitur universal yang tidak terikat otorisasi role, diperuntukkan di `AuthControl
 |---|---|---|
 | `register()` | `POST /auth/register` | Fungsi pendaftaran untuk semua tipe role. Menerima `RegisterDto` (email, password, nama, role wajib diisi). Sistem melakukan *hash* menggunakan `bcrypt` lalu menyimpan ke tabel User. |
 | `login()` | `POST /auth/login` | Fungsi verifikasi login. Menerima `LoginDto` (email, password). Jika verifikasi `bcrypt.compare()` sukses, *auth service* akan menyerahkan payload *(id, email, role)* untuk di-sign menjadi JWT Token. Mengembalikan objek `{ accessToken: "..." }`. |
+| `getProfile()` | `GET /auth/me` | Fungsi verifikasi profil user yang sedang login menggunakan `JwtAuthGuard` dan `@GetUser()`. |
 
 ---
 
-## 🔍 2. Fungsi Role: PENCARI (Penyewa)
+## 🔍 2. Fungsi Role: CUSTOMER (Penyewa)
 Semua fungsi berikut mengacu pada kebutuhan Pencari Kost.
 
 ### Module: Kost (`KostService`)
@@ -26,27 +27,27 @@ Semua fungsi berikut mengacu pada kebutuhan Pencari Kost.
 ### Module: Booking (`BookingService`)
 | Fungsi/Method | Endpoint | Guard Level | Keterangan |
 |---|---|---|---|
-| `createBooking()` | `POST /booking` | `@Roles('PENCARI')` | Memasukkan record baru ke database. Menerima `CreateBookingDto` *(kostId, startDate, durationMonths)*. Logic Service wajib mengambil field harga di tabel Kost lalu mengalikannya dengan *duration* per bulan untuk mengisi otomatis field `totalPrice`. Parameter status dibuat otomatis `PENDING`. |
-| `findMyBookings()` | `GET /booking` | `@Roles('PENCARI')` | Fungsi historis yang di-_filtering_ berdasarkan subjek JWT Token / `userId` PENCARI. Mengambil seluruh pesanan dari user tersebut. |
+| `createBooking()` | `POST /booking` | `@Roles('CUSTOMER')` | Memasukkan record baru ke database. Menerima `CreateBookingDto` *(kostId, startDate, durationMonths)*. Logic Service wajib mengambil field harga di tabel Kost lalu mengalikannya dengan *duration* per bulan untuk mengisi otomatis field `totalPrice`. Parameter status dibuat otomatis `PENDING`. |
+| `findMyBookings()` | `GET /booking` | `@Roles('CUSTOMER')` | Fungsi historis yang di-_filtering_ berdasarkan subjek JWT Token / `userId` CUSTOMER. Mengambil seluruh pesanan dari user tersebut. |
 
 ---
 
-## 💼 3. Fungsi Role: PEMILIK (Pemberi Sewa)
+## 💼 3. Fungsi Role: OWNER (Pemberi Sewa)
 Semua fungsi berikut adalah administrasi pengelolaan kos yang dilindungi sangat ketat khusus Pemilik.
 
 ### Module: Kost (`KostService`)
 | Fungsi/Method | Endpoint | Guard Level | Keterangan |
 |---|---|---|---|
-| `createKost()` | `POST /kost` | `@Roles('PEMILIK')` | Fungsi membuat Kost baru. Mengambil `ownerId` berdasarkan subjek Token `req.user.id`. Data DTO *(name, description, city, dll)* akan langsung direkam. |
-| `findMyKosts()` | `GET /kost/my` | `@Roles('PEMILIK')` | Menampilkan dashboard kost milik user spesifik. Tabel didapatkan dari query SQL `where { ownerId: req.user.id }`. |
-| `updateKost()` | `PATCH /kost/:id` | `@Roles('PEMILIK')` | Mengedit deskripsi, gambar, maupun harga. Guard di tingkat logic harus memastikan sang pemilik *benar-benar berhak* mengubah Kost ber-KTP/:id tersebut. |
-| `deleteKost()` | `DELETE /kost/:id` | `@Roles('PEMILIK')` | Menghapus penawaran properti (soft delete atau hard delete bergantung kesepakatan). |
+| `createKost()` | `POST /kost` | `@Roles('OWNER')` | Fungsi membuat Kost baru. Mengambil `ownerId` berdasarkan subjek Token `req.user.id`. Data DTO *(name, description, city, dll)* akan langsung direkam. |
+| `findMyKosts()` | `GET /kost/my` | `@Roles('OWNER')` | Menampilkan dashboard kost milik user spesifik. Tabel didapatkan dari query SQL `where { ownerId: req.user.id }`. |
+| `updateKost()` | `PATCH /kost/:id` | `@Roles('OWNER')` | Mengedit deskripsi, gambar, maupun harga. Guard di tingkat logic harus memastikan sang pemilik *benar-benar berhak* mengubah Kost ber-KTP/:id tersebut. |
+| `deleteKost()` | `DELETE /kost/:id` | `@Roles('OWNER')` | Menghapus penawaran properti (soft delete atau hard delete bergantung kesepakatan). |
 
 ### Module: Booking (`BookingService`)
 | Fungsi/Method | Endpoint | Guard Level | Keterangan |
 |---|---|---|---|
-| `findIncomingBookings()` | `GET /booking/incoming` | `@Roles('PEMILIK')` | Sebuah antarmuka tabel pesanan (Booking). Query TypeORM yang dipakai harus me-*relational* target `Kost`, dengan kriteria filter dimana `Kost.ownerId == req.user.id`. |
-| `updateBookingStatus()`| `PATCH /booking/:id/status` | `@Roles('PEMILIK')` | Sangat krusial. Merupakan fungsi yang merubah status dari `PENDING` -> `APPROVED` atau `REJECTED`. DTO yang diterima hanyalah `UpdateStatusDto` berisi string ENUM konfirmasi. |
+| `findIncomingBookings()` | `GET /booking/incoming` | `@Roles('OWNER')` | Sebuah antarmuka tabel pesanan (Booking). Query TypeORM yang dipakai harus me-*relational* target `Kost`, with kriteria filter where `Kost.ownerId == req.user.id`. |
+| `updateBookingStatus()`| `PATCH /booking/:id/status` | `@Roles('OWNER')` | Sangat krusial. Merupakan fungsi yang merubah status dari `PENDING` -> `APPROVED` atau `REJECTED`. DTO yang diterima hanyalah `UpdateStatusDto` berisi string ENUM konfirmasi. |
 
 ---
 
