@@ -21,7 +21,7 @@ Semua fungsi berikut mengacu pada kebutuhan Pencari Kost.
 | Fungsi/Method | Endpoint | Guard Level | Keterangan |
 |---|---|---|---|
 | `findAllKosts()` | `GET /kost` | `Public` (Akses Bebas) | Fungsi membaca tabel Kost untuk semua pengunjung. Wajib memperhitungkan filter query parametrik seperti `?city=` dan `?maxPrice=`. |
-| `findKostById()` | `GET /kost/:id` | `Public` (Akses Bebas) | Mengembalikan struktur objek detail kost dari Prisma (termasuk list facilities & array String gambar). |
+| `findKostById()` | `GET /kost/:id` | `Public` (Akses Bebas) | Mengembalikan struktur objek detail kost dari database (termasuk list facilities & array String gambar). |
 
 ### Module: Booking (`BookingService`)
 | Fungsi/Method | Endpoint | Guard Level | Keterangan |
@@ -45,7 +45,7 @@ Semua fungsi berikut adalah administrasi pengelolaan kos yang dilindungi sangat 
 ### Module: Booking (`BookingService`)
 | Fungsi/Method | Endpoint | Guard Level | Keterangan |
 |---|---|---|---|
-| `findIncomingBookings()` | `GET /booking/incoming` | `@Roles('PEMILIK')` | Sebuah antarmuka tabel pesanan (Booking). Query Prisma yang dipakai harus me-*relational* target `Kost`, dengan kriteria filter dimana `Kost.ownerId == req.user.id`. |
+| `findIncomingBookings()` | `GET /booking/incoming` | `@Roles('PEMILIK')` | Sebuah antarmuka tabel pesanan (Booking). Query TypeORM yang dipakai harus me-*relational* target `Kost`, dengan kriteria filter dimana `Kost.ownerId == req.user.id`. |
 | `updateBookingStatus()`| `PATCH /booking/:id/status` | `@Roles('PEMILIK')` | Sangat krusial. Merupakan fungsi yang merubah status dari `PENDING` -> `APPROVED` atau `REJECTED`. DTO yang diterima hanyalah `UpdateStatusDto` berisi string ENUM konfirmasi. |
 
 ---
