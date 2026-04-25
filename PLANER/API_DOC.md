@@ -183,6 +183,37 @@ Sebagian besar endpoint memerlukan token otorisasi. Token didapatkan melalui end
 
 ---
 
+## 🗨️ 5. Modul Chat Realtime (Socket.io)
+
+Layanan Chat menggunakan **WebSocket** untuk pesan instan dan **REST API** untuk riwayat.
+
+### 5.1 Memulai Chat
+- **Method:** `POST`
+- **Endpoint:** `/chat/start`
+- **Body:** `{ "ownerId": "uuid-owner" }`
+- **Deskripsi:** Membuat atau mengambil ID percakapan.
+
+### 5.2 Get Daftar Chat
+- **Method:** `GET`
+- **Endpoint:** `/chat`
+- **Deskripsi:** List orang yang pernah di-chat (untuk halaman inbox).
+
+### 5.3 Get Riwayat Pesan
+- **Method:** `GET`
+- **Endpoint:** `/chat/:conversationId`
+- **Deskripsi:** Riwayat bubble chat saat masuk ke room.
+
+### 5.4 Socket Messaging (Events)
+- **Host:** Base URL Backend
+- **Auth:** Kirim JWT di `handshake.auth.token`
+- **Events:**
+  - `joinRoom`: Emit `conversationId` saat buka room.
+  - `sendMessage`: Emit `{ conversationId, text }` untuk kirim pesan.
+  - `receiveMessage`: Server akan emit ini ke client saat ada pesan masuk.
+  - `typing`: Emit `{ conversationId, isTyping }` untuk status mengetik.
+
+---
+
 ## 🚨 Error Handling
 Backend menggunakan response standar NestJS:
 ```json

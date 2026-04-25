@@ -9,6 +9,9 @@ import { User } from './entities/user.entity';
 import { Kost } from './entities/kost.entity';
 import { Booking } from './entities/booking.entity';
 import { Room } from './entities/room.entity';
+import { Conversation } from './entities/conversation.entity';
+import { Message } from './entities/message.entity';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -25,13 +28,14 @@ import { Room } from './entities/room.entity';
         username: configService.get<string>('DB_USER'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
-        entities: [User, Kost, Booking, Room],
+        entities: [User, Kost, Booking, Room, Conversation, Message],
         synchronize: configService.get<boolean>('DB_SYNCHRONIZE', true),
       }),
     }),
     AuthModule,
     KostModule,
     BookingModule,
+    ChatModule,
   ],
 })
 export class AppModule {}
