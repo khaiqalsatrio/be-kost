@@ -101,7 +101,7 @@ Sebagian besar endpoint memerlukan token otorisasi. Token didapatkan melalui end
 - **Method:** `GET`
 - **Endpoint:** `/kost`
 - **Akses:** Public
-- **Deskripsi:** Menampilkan daftar semua kost. Mendukung *filtering* via query params jika sudah di-handle backend (`?city=xxx`).
+- **Deskripsi:** Menampilkan daftar semua kost. Mendukung *filtering* via query params (`?city=xxx&maxPrice=5000000`).
 
 **Response Success:**
 ```json

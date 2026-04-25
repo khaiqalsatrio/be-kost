@@ -15,7 +15,7 @@ import { Booking } from '../entities/booking.entity';
 @Controller('booking')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class BookingController {
-  constructor(private readonly bookingService: BookingService) {}
+  constructor(private readonly bookingService: BookingService) { }
 
   // --- Pencari Endpoints ---
 
