@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany } from 'typeorm';
 import { User } from './user.entity';
 import { Booking } from './booking.entity';
+import { Room } from './room.entity';
 
 @Entity('kosts')
 export class Kost {
@@ -42,4 +43,7 @@ export class Kost {
 
   @OneToMany(() => Booking, (booking) => booking.kost)
   bookings: Booking[];
+
+  @OneToMany(() => Room, (room) => room.kost)
+  rooms: Room[];
 }

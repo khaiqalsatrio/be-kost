@@ -40,7 +40,10 @@ export class AuthService {
   async login(loginDto: LoginDto) {
     const { email, password } = loginDto;
 
-    const user = await this.userRepository.findOne({ where: { email } });
+    const user = await this.userRepository.findOne({ 
+      where: { email },
+      relations: ['kosts'],
+    });
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -50,9 +53,17 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    const hasKost = user.kosts && user.kosts.length > 0;
     const payload = { sub: user.id, email: user.email, role: user.role };
     return {
       accessToken: this.jwtService.sign(payload),
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        hasKost: hasKost,
+      }
     };
   }
 }

@@ -8,6 +8,7 @@ import { BookingModule } from './booking/booking.module';
 import { User } from './entities/user.entity';
 import { Kost } from './entities/kost.entity';
 import { Booking } from './entities/booking.entity';
+import { Room } from './entities/room.entity';
 
 @Module({
   imports: [
@@ -24,7 +25,7 @@ import { Booking } from './entities/booking.entity';
         username: configService.get<string>('DB_USER'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
-        entities: [User, Kost, Booking],
+        entities: [User, Kost, Booking, Room],
         synchronize: configService.get<boolean>('DB_SYNCHRONIZE', true),
       }),
     }),

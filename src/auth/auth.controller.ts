@@ -5,11 +5,18 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { GetUser } from '../common/decorators/get-user.decorator';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from '../entities/user.entity';
+import { Repository } from 'typeorm';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) { }
+  constructor(
+    private authService: AuthService,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+  ) { }
 
   @Post('register')
   async register(@Body() registerDto: RegisterDto) {
@@ -26,7 +33,15 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('me')
   @ApiOperation({ summary: 'Melihat profil user sendiri' })
-  getProfile(@GetUser() user: any) {
-    return user;
+  async getProfile(@GetUser() user: any) {
+    const userData = await this.userRepository.findOne({
+      where: { id: user.id },
+      relations: ['kosts'],
+    });
+
+    return {
+      ...user,
+      hasKost: (userData?.kosts?.length ?? 0) > 0,
+    };
   }
 }
